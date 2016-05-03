@@ -1,4 +1,6 @@
-package methods;
+package collections;
+
+import sun.java2d.loops.DrawLine;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,9 +70,9 @@ class MyFish extends MyObject implements MoveDrawable {
 public class LakeAL {
     private int width;
     private int height;
-    private final int max_objects = 10;
-    private static ArrayList<MyObject> myobjects = new ArrayList<MyObject>();
-    private int movables_num = 0;
+    private ArrayList<MyObject> myobjects = new ArrayList<MyObject>();
+    //private ArrayList<Drawable> drawables = new ArrayList<Drawable>();
+    //private Movable[] movables = new Movable[max_objects];
 
     public LakeAL(int width, int height) {
         this.width = width;
@@ -78,30 +80,23 @@ public class LakeAL {
     }
 
     public void addMyObject(MyObject obj) {
-        if (obj instanceof Drawable) {
-           myobjects.add(obj);
-           //myobjects.getClass().getInterfaces();
-           //drawables.add((Drawable)obj);
-           //myobjects.getClass().getInterfaces();
-        }
-        if (obj instanceof Movable) {
-            addMovable((Movable)obj);
-           // myobjects.getClass().getInterfaces();
-        }
+
+            myobjects.add(obj);
     }
 
-    public void addMovable(Movable m) {
-        if (movables_num >= max_objects)
-            return;
-        //myobjects.add((MyObject)m);
-        movables_num++;
-       
-        
-    }
 
     public void moveObjects() {
-        for (int i = 0; i < movables_num; i++)
-            ((Movable) myobjects.get(i)).move(width, height);
+        Iterator<MyObject> it =myobjects.iterator();
+        while(it.hasNext()){
+            MyObject obj = it.next();
+            if(obj instanceof Movable)
+            {
+                Movable m =(Movable)obj;
+                m.move(width,height);
+            }
+        }
+
+
     }
 
     public void display() {
@@ -111,26 +106,32 @@ public class LakeAL {
         for (int i = 0; i < height; i++) {
             System.out.print("|");
             for (int j = 0; j < width; j++) {
-                Iterator<MyObject> it = myobjects.iterator();
-                while (it.hasNext()) {
-                   Drawable d = (Drawable)it.next();
-                    d.display(j, i);
+                for(MyObject obj:myobjects){
+                    if(obj instanceof Drawable)
+                    {
+
+                        ((Drawable)obj).display(j,i);
+                    }
+
+                    }
+
+                    System.out.print(" ");
                 }
-                System.out.print(" ");
+                System.out.println("|");
             }
-            System.out.println("|");
+            for (int i = 0; i < width; i++)
+                System.out.print("-");
+            System.out.println();
         }
-        for (int i = 0; i < width; i++)
-            System.out.print("-");
-        System.out.println();
-    }
+
+
 
     public static void main(String args[]) {
         LakeAL lake = new LakeAL(80, 20);
         MyFish f = new MyFish("FIsh", "<#--<", 1, 1);
-        lake.addMyObject(f); //myobjects 의 ArrayList 에 추가 됨.
+        lake.addMyObject(f);
         lake.addMyObject(new MyRock("Rock", "(##)", 10, 10));
-       
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             lake.moveObjects();
